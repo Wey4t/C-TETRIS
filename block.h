@@ -10,7 +10,7 @@
 #define BLOCK_Z 7
 #define BLOCK_X 4
 #define BLOCK_Y 4
-char *rotate(char **block);
+void rotate(char *block);
 void reset_block(char **block);
 void move_right_block(char *);
 void move_left_block(char *);
