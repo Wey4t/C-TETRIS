@@ -16,7 +16,7 @@ void move_right_block(char *);
 void move_left_block(char *);
 void clean_block(char *, int, int);
 void fall_down(char *);
-void down(char *);
+int down(char *);
 
 
 #endif /*  WINDOWS_H */
