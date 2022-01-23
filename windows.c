@@ -1,7 +1,9 @@
 #include<stdio.h>
 
 #include "windows.h"
-
+char *windows_top = 
+					 "#..........#"
+					 "#..........#";
 char *windows_base = "#..........#"
 					 "#..........#"
 					 "#..........#"

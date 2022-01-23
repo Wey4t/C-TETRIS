@@ -19,11 +19,12 @@
 #define POINT_POS_Y 5
 #define POINT_POS_X (GAME_WINODW_POS_X + WINDOW_X + 4)
 #define BLOCK_GENERATE_POS_X (GAME_WINODW_POS_X + WINDOW_X)/2
-#define BLOCK_GENERATE_POS_Y GAME_WINDOW_POS_Y
+#define BLOCK_GENERATE_POS_Y GAME_WINDOW_POS_Y-2
 #define DRAW 1
 #define ERASE 2 
 #define BLOCK_POINT 4
 #define LINE_POINT 100
+#define TIME 1.5 
 #define FILE_NAME "save.txt"
 int block_curr_pos_x = BLOCK_GENERATE_POS_X;
 int block_curr_pos_y = BLOCK_GENERATE_POS_Y;
@@ -37,6 +38,7 @@ extern char *T;
 extern char *Z;
 extern char *windows_base;
 extern char *next_block_windows; 
+extern char *windows_top;
 char hP[] = "Higest point:";
 char p[] = "Point:";
 
@@ -55,8 +57,8 @@ char grid_buff[GRID_Y*(GRID_X+1)+2];
 char grid[GRID_Y][GRID_X];
 int line[GRID_Y];
 int highestPoint; 
-int current_point = 0;
-
+int current_point;
+char temp_block[BLOCK_X*BLOCK_Y];
 int main(){
 	char key;
 	int temp_point = current_point; 
@@ -65,14 +67,15 @@ int main(){
 		if (_kbhit()){
 				key = _getch();	
 			}
-	} while (key != 's'); // s for start 
+	} while (key != 's' && key != 'S'); // s for start 
 	srand((unsigned)time(NULL));
 	system("mode con cols=41 lines=21");
+	while(key != 'q' && key != 'Q'){
 	grid_init();
-	grid_buff[GRID_Y*(GRID_X+1)+1] = '\0';
  	draw();
  	char *block = NULL;
  	char *next_block = NULL;
+ 	key = '0';
 	while(!islost()){
 		done = 0;
 		//char *block = block_generater(4);
@@ -81,14 +84,20 @@ int main(){
 		}else{
 			block_drawer(next_block,NEXT_BLOCK_WINDOW_POS_Y+1,NEXT_BLOCK_WINDOW_POS_X+3,ERASE); 
 			block = next_block;
+			strncpy(temp_block,block,BLOCK_Y*BLOCK_X);
 			block_drawer(block,BLOCK_GENERATE_POS_Y,BLOCK_GENERATE_POS_X,DRAW); 
 		}
 		next_block = block_generater(rand()%7 + 1,NEXT_BLOCK_WINDOW_POS_Y+1,NEXT_BLOCK_WINDOW_POS_X+3);
 		draw();
+		time_t start;
+		time_t end;
 		while(!done && !islost()){
 			if (_kbhit()){
-				key = _getch();	
+				key = _getch();
+				if(key == 's' || key == 'S') 
+					time(&start); 
 			}
+			time(&end);
 			//key = fgetc(stdin);
 			switch (key){
 				case 'W':
@@ -115,8 +124,17 @@ int main(){
 					down(block);
 					break;
 				}
-			} 
-			key = '0';
+			}
+			if(key != 'S' && key != 's'){
+				if(difftime(end,start) >= TIME){
+					key = 's';
+					time(&start);
+				}else{
+					key = '0';
+				}
+			}else{
+				key = '0';
+			}
 			system("cls");
 			draw();
 			getPoint();
@@ -124,6 +142,8 @@ int main(){
 				char *pnt = &grid[POINT_POS_Y][POINT_POS_X + sizeof(p)];
 				itoa(current_point, pnt, 10);
 			}
+			if(islost())
+				break; 
 		}
 	}
 	if(current_point > highestPoint){
@@ -141,11 +161,30 @@ int main(){
 		fclose(fp);
 		free(buff);
 	}
+	grid_init();
+	char *game_over = &grid[8][4];
+	strncpy(game_over, "Game.over.",sizeof("Game.over.")-1);
+	game_over += GRID_X;
+	strncpy(game_over, "Enter.any",sizeof("Enter.any.")-1);
+	game_over += GRID_X;
+	strncpy(game_over, ".key.to",sizeof(".key.to")-1);
+	game_over += GRID_X;
+	strncpy(game_over, "..restart",sizeof("..restart")-1);
+	game_over += GRID_X;
+	strncpy(game_over, ".or.(q)uit",sizeof(".or.(q)uit")-1);
+	usleep(5000000); 
+	draw();
+	usleep(5000000); 
+	key =  _getch();
+	}
 	return 0;
 }
 
 void grid_init(){
 	int x,y;
+	grid_buff[GRID_Y*(GRID_X+1)+1] = '\0';
+	current_point = 0;
+	memset(line, 0, sizeof(int)*GRID_Y); 
 	memset(grid,' ',GRID_X*GRID_Y);
 	for(y = 0; y < GRID_Y; ++y){
 		for(x = 0; x < GRID_X; ++x){
@@ -157,6 +196,9 @@ void grid_init(){
 			}else if(y >= NEXT_BLOCK_WINDOW_POS_Y && y < NEXT_BLOCK_WINDOW_POS_Y + NEXT_BLOCK_WINDOW_Y
 				    && x >= NEXT_BLOCK_WINDOW_POS_X && x < NEXT_BLOCK_WINDOW_POS_X + NEXT_BLOCK_WINDOW_X){
 				grid[y][x] = next_block_windows[(y-NEXT_BLOCK_WINDOW_POS_Y) * NEXT_BLOCK_WINDOW_X + (x-NEXT_BLOCK_WINDOW_POS_X)];    
+			}else if(y >= GAME_WINDOW_POS_Y-2 && y < GAME_WINDOW_POS_Y
+				    && x >= GAME_WINODW_POS_X && x < GAME_WINODW_POS_X + WINDOW_X){
+				grid[y][x] = windows_top[(y-(GAME_WINDOW_POS_Y-2))* WINDOW_X  + (x-GAME_WINODW_POS_X)];    
 			}
 		}
 	}
@@ -343,13 +385,17 @@ void rotate(char *block){
 	}
 	for(x = 0; x < BLOCK_X; ++x){
 		for(y = 0; y < BLOCK_Y; ++y){
-			if(temp[y*BLOCK_Y + x] == BLOCK_BODY && (grid[y+block_curr_pos_y-1][x+block_curr_pos_x] == WALL
-			|| grid[y+block_curr_pos_y-1][x+block_curr_pos_x] == BLOCK_DONE || y+block_curr_pos_y < BLOCK_GENERATE_POS_Y)){
+			if(temp[y*BLOCK_Y + x] == BLOCK_BODY
+			&& (grid[y+block_curr_pos_y-1][x+block_curr_pos_x] == GRID_LINE
+			|| grid[y+block_curr_pos_y-1][x+block_curr_pos_x] == WALL
+			|| grid[y+block_curr_pos_y-1][x+block_curr_pos_x] == BLOCK_DONE 
+			|| y+block_curr_pos_y < BLOCK_GENERATE_POS_Y)){
 				free(temp);
 				return;
 			}
 		}
 	}
+	strncpy(temp_block,block,BLOCK_Y*BLOCK_X);
 	block_drawer(block, block_curr_pos_y, block_curr_pos_x, ERASE);
 	block_drawer(temp, block_curr_pos_y, block_curr_pos_x, DRAW); 
 	strncpy(block,temp,BLOCK_Y*BLOCK_X);
