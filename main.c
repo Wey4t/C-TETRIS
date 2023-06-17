@@ -71,7 +71,7 @@ int main(){
 			}
 	} while (key != 's' && key != 'S'); // s for start 
 	srand((unsigned)time(NULL));
-	system("mode con cols=41 lines=21");
+	system("mode 41, 21");
 	while(key != 'q' && key != 'Q'){
 	grid_init();
  	draw();
