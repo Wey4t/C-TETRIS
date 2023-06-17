@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <time.h>
 #include <conio.h>
+#include <windows.h>
 #include <stdlib.h> 
 #include <unistd.h>
 #include <string.h>
-#include "windows.h"
+#include "window.h"
 #include "block.h"
 
 #define GRID_X  40
@@ -59,6 +60,7 @@ int line[GRID_Y];
 int highestPoint; 
 int current_point;
 char temp_block[BLOCK_X*BLOCK_Y];
+
 int main(){
 	char key;
 	int temp_point = current_point; 
@@ -92,6 +94,7 @@ int main(){
 		time_t start;
 		time_t end;
 		while(!done && !islost()){
+
 			if (_kbhit()){
 				key = _getch();
 				if(key == 's' || key == 'S') 
@@ -135,7 +138,7 @@ int main(){
 			}else{
 				key = '0';
 			}
-			system("cls");
+            system("cls");
 			draw();
 			getPoint();
 			if(current_point > temp_point){
@@ -153,7 +156,7 @@ int main(){
 		if(fp == NULL){
 			fprintf(stderr,"file open failed.\n");
 		}
-		char *buff = malloc(10*sizeof(char));
+		char *buff = (char*)malloc(10*sizeof(char));
 		itoa(highestPoint, buff, 10);
 		char *end = buff;
 		while(*end != '\0') end++;
@@ -172,9 +175,9 @@ int main(){
 	strncpy(game_over, "..restart",sizeof("..restart")-1);
 	game_over += GRID_X;
 	strncpy(game_over, ".or.(q)uit",sizeof(".or.(q)uit")-1);
-	usleep(5000000); 
+	Sleep(500); 
 	draw();
-	usleep(5000000); 
+	Sleep(5000); 
 	key =  _getch();
 	}
 	return 0;
@@ -242,6 +245,7 @@ void draw(){
 		}
 	}
 	*(buff) = '\n';
+	system("cls");
 	printf("%s",grid_buff);
 } 
 
@@ -340,7 +344,7 @@ void move_left_block(char *block){
 }
 void fall_down(char *block){
 	while(down(block) != 1){
-		usleep(60000);
+		Sleep(60);
 		draw();
 	}
 		
@@ -455,14 +459,14 @@ void eraseLine(int start, int end){
 		}
 	}
 	current_point += cal_line_point(end-start+1) * LINE_POINT; 
-	usleep(500000);
+	Sleep(500);
 	draw();
 	for(y = end; y > end-start+1; --y){
 		for(x = 0; x < WINDOW_X-2; ++x){
 			grid[y+GAME_WINDOW_POS_Y-1][x+GAME_WINODW_POS_X+1] = grid[y+GAME_WINDOW_POS_Y-1-(end-start+1)][x+GAME_WINODW_POS_X+1];
 		}
 	}
-	usleep(500000);
+	Sleep(500);
 	draw();
 }
 
