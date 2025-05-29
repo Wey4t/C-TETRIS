@@ -1,3 +1,4 @@
+
 #include<stdio.h>
 #include "block.h"
 
@@ -8,4 +9,3 @@ char *O = "     OO  OO     ";
 char *S = "      O         ";
 char *T = "      O  OOO    ";
 char *Z = "     OO   OO    ";
-

@@ -10,6 +10,7 @@
 #define BLOCK_Z 7
 #define BLOCK_X 4
 #define BLOCK_Y 4
+
 void rotate(char *block);
 void reset_block(char **block);
 void move_right_block(char *);
@@ -18,5 +19,4 @@ void clean_block(char *, int, int);
 void fall_down(char *);
 int down(char *);
 
-
-#endif /*  WINDOWS_H */
+#endif /* BLOCK_H */

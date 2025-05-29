@@ -10,5 +10,4 @@
 #define BLOCK_DONE '$'
 #define BACKGROUND '.'
 
-
-#endif /*  WINDOWS_H */
+#endif /* WINDOWS_H */
