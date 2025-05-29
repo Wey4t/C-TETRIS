@@ -24,7 +24,7 @@
 #define ERASE 2 
 #define BLOCK_POINT 4
 #define LINE_POINT 100
-#define TIME 1.5 
+#define TIME 0.5 
 #define FILE_NAME "save.txt"
 
 // Color pairs for ncurses
@@ -98,7 +98,7 @@ int main(){
     
     // Show instructions
     show_instructions();
-    
+	
     srand((unsigned)time(NULL));
     
     while(1) {
@@ -219,6 +219,9 @@ int main(){
         key = getch();
         if(key == 'q' || key == 'Q')
             break;
+    	clear();
+		
+	
     }
     
 exit_game:
@@ -257,13 +260,13 @@ void init_colors() {
 
 void create_windows() {
     // Main game window
-    game_win = newwin(WINDOW_Y + 2, WINDOW_X + 2, GAME_WINDOW_POS_Y - 1, GAME_WINDOW_POS_X);
+    game_win = newwin(WINDOW_Y, WINDOW_X, GAME_WINDOW_POS_Y, GAME_WINDOW_POS_X);
     
     // Next block preview window (make it bigger to show blocks properly)
-    next_win = newwin(8, 10, NEXT_BLOCK_WINDOW_POS_Y, NEXT_BLOCK_WINDOW_POS_X);
+    next_win = newwin(6, 8, NEXT_BLOCK_WINDOW_POS_Y, NEXT_BLOCK_WINDOW_POS_X);
     
     // Score window
-    score_win = newwin(8, 20, HIGHEST_POINT_POS_Y, HIGHEST_POINT_POS_X);
+    score_win = newwin(6, 20, HIGHEST_POINT_POS_Y, HIGHEST_POINT_POS_X);
     
     // Info window for controls
     info_win = newwin(10, 25, 1, 45);
@@ -271,13 +274,13 @@ void create_windows() {
 
 void destroy_windows() {
     if(game_win) delwin(game_win);
-    if(next_win) delwin(next_win);
+    // Next block preview window (make it bigger to show blocks properly)
     if(score_win) delwin(score_win);
     if(info_win) delwin(info_win);
 }
 
 void grid_init() {
-    current_point = 0;
+    // Info window for controls
     memset(line, 0, sizeof(int) * GRID_Y);
     memset(grid, ' ', GRID_X * GRID_Y);
     
@@ -319,7 +322,7 @@ void draw_game() {
                 mvwaddch(game_win, y, x, '#');
                 wattroff(game_win, COLOR_PAIR(COLOR_BLOCK_PLACED));
             } else if(ch == BACKGROUND) {
-                mvwaddch(game_win, y, x, '.');
+                mvwaddch(game_win, y, x, ' ');
             }
         }
     }
@@ -333,14 +336,14 @@ void draw_ui() {
     box(score_win, 0, 0);
     wattron(score_win, COLOR_PAIR(COLOR_UI_TEXT));
     mvwprintw(score_win, 1, 2, "TETRIS");
-    mvwprintw(score_win, 3, 2, "Score:");
+    mvwprintw(score_win, 2, 2, "Score:");
     wattron(score_win, COLOR_PAIR(COLOR_SCORE));
-    mvwprintw(score_win, 4, 2, "%d", current_point);
+    mvwprintw(score_win, 2, 10, "%d", current_point);
     wattroff(score_win, COLOR_PAIR(COLOR_SCORE));
     wattron(score_win, COLOR_PAIR(COLOR_UI_TEXT));
-    mvwprintw(score_win, 6, 2, "High:");
+    mvwprintw(score_win, 4, 2, "High:");
     wattron(score_win, COLOR_PAIR(COLOR_SCORE));
-    mvwprintw(score_win, 7, 2, "%d", highestPoint);
+    mvwprintw(score_win, 4, 10, "%d", highestPoint);
     wattroff(score_win, COLOR_PAIR(COLOR_SCORE));
     wattroff(score_win, COLOR_PAIR(COLOR_UI_TEXT));
     wrefresh(score_win);
@@ -360,12 +363,12 @@ void draw_ui() {
 
 void show_instructions() {
     clear();
-    mvprintw(LINES/2 - 3, COLS/2 - 15, "WELCOME TO NCURSES TETRIS!");
     mvprintw(LINES/2 - 1, COLS/2 - 10, "Press any key to start");
     mvprintw(LINES/2 + 1, COLS/2 - 15, "Use WASD to control pieces");
     mvprintw(LINES/2 + 2, COLS/2 - 10, "Press Q to quit anytime");
     refresh();
     getch();
+    clear();
 }
 
 void show_game_over() {

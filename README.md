@@ -1,9 +1,53 @@
-# myTETRIS
-## start screen
-![image](https://github.com/Wey4t/C-TETRIS/assets/89705390/693d658f-8c67-4dca-830f-4d0d87ea04d6)
+# Tetris Game
 
-## start game
+A Tetris implementation built in C using the ncurses library for terminal-based gameplay. 
 
-![image](https://github.com/Wey4t/C-TETRIS/assets/89705390/adb80bea-53a8-4651-8103-9bb7b7b4d6c5)
-## get points 
-![image](https://github.com/Wey4t/C-TETRIS/assets/89705390/43421934-252f-474d-ad0a-fed44a60057b)
+## Installation
+
+On macOS, install the required dependencies using Homebrew:
+```bash
+brew install ncurses
+```
+
+On Ubuntu or Debian systems, install the development libraries:
+```bash
+sudo apt-get install libncurses5-dev libncursesw5-dev
+```
+
+## Building the Game
+
+The project includes a Makefile for simplified building. Navigate to the project directory and execute the build command:
+
+```bash
+make
+```
+
+This command compiles all source files and creates the executable named `tetris`.
+
+## Running the Game
+
+Start the game by executing the compiled binary:
+
+```bash
+./tetris_ncurses
+```
+
+Alternatively, use the Makefile to build and run in one step:
+
+```bash
+make run
+```
+
+## Controls
+
+The game uses keyboard controls for all interactions:
+
+- **W** or **w**: Rotate the current piece clockwise
+- **A** or **a**: Move piece left
+- **D** or **d**: Move piece right  
+- **S** or **s**: Soft drop (faster descent)
+- **Space**: Hard drop (instant placement)
+- **Q** or **q**: Quit the game
+
+## Play
+![image](./tetris.gif)
